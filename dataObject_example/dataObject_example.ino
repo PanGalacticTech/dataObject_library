@@ -23,9 +23,13 @@
 #include "dataObject.h"
 
 
-dataObject dataLib;    // Create instance of Data library
-
 #define BAUDRATE 115200
+#define FILTER_BIAS 0.7  // 0 to 1: Higher numbers = faster response less filtering // Lower numbers = Slower response, more filtering
+#define SERIAL_MONITOR false;
+
+dataObject dataLib(FILTER_BIAS, SERIAL_MONITOR);    // Create instance of Data library
+
+
 
 
 void begin(){
