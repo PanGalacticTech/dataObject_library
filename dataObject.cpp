@@ -1,7 +1,7 @@
 /* ~~~~~~~~~~~~~ dataObject.cpp ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
    Library to implement data sorting & filtering algorithms
-      
+
    Data Filtering Algorithms:
 
    - Recursive Filter
@@ -69,11 +69,8 @@ void dataObject::begin(uint32_t baudrate) {
 
 
 int32_t dataObject::recursiveFilter(int32_t Xn) {
-
   int32_t Yn;
-
   Yn = (w * Xn) + ((1 - w) * Ypre);
-
   if (printSerial) {
     Serial.print("Input: ");
     Serial.print(Xn);
@@ -82,8 +79,64 @@ int32_t dataObject::recursiveFilter(int32_t Xn) {
     Serial.print("  Output: ");
     Serial.println(Yn);
   }
-
   Ypre = Yn;
-
   return Yn;
+}
+
+
+
+
+// ~~~ Averaging Methods ~~~
+
+
+
+
+// Averaging Methods
+void dataObject::addDataPoint(int16_t dataPoint) {
+  for (int i = 0; i < (SAMPLE_HISTORY - 1) ; i++) {
+    g_data_array[i] = g_data_array[i + 1];
+  }
+  g_data_array[SAMPLE_HISTORY - 1] = dataPoint;
+}
+
+
+
+int16_t dataObject::returnMean(int16_t dataArray[SAMPLE_HISTORY]) {
+  int32_t M = 0;
+  for (int i = 0; i < SAMPLE_HISTORY; i++) {
+    M = M + dataArray[i];
+  }
+  float f_average = float(M) / float(SAMPLE_HISTORY);
+  // Serial.print(f_average);
+  //  Serial.print(", \n");
+  M = int(f_average + 0.5);
+  //  Serial.print(M);
+  //  Serial.print(", \n");
+  return M;
+}
+
+int16_t dataObject::calcMean() {
+  int16_t meanAverage;
+  meanAverage = dataObject::returnMean(g_data_array);
+  return meanAverage;
+}
+
+
+// Plotting and Printing Methods
+void dataObject::plotHeadings() {
+  Serial.println("last_data_point, rolling_mean, ");
+}
+
+void dataObject::plotMean(int16_t last_data_point, int16_t rolling_mean) {
+  char buffer[32];
+  sprintf(buffer, "%i, %i,", last_data_point, rolling_mean);
+  Serial.println(buffer);
+}
+
+void dataObject::printArray(int16_t dataArray[SAMPLE_HISTORY]) {
+  for (int i = 0; i < SAMPLE_HISTORY; i++) {
+    Serial.print(dataArray[i]);
+    Serial.print(", ");
+  }
+  Serial.print("\n");
 }
